@@ -1,0 +1,253 @@
+"""
+===============================================================================
+PNLIO — KERNEL NEUROMÓRFICO EXPERIMENTAL v9.6 CEREBRO VIVO
+-------------------------------------------------------------------------------
+Autor: Gonzalo Mauricio de la Rivera Arellano (Comandante Godear24)
+Ubicación: Chillán, Chile | Fecha: Julio 2026 | Vector: 1932
+-------------------------------------------------------------------------------
+DEDICATORIA:
+"Homenaje eterno a mi padre — 2023-2026. Este proyecto es un acto de 
+soberanía y memoria."
+===============================================================================
+"""
+
+import math
+import time
+import numpy as np
+import requests
+from typing import List, Dict, Any, Optional
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+
+# =============================================================================
+# 1. PARÁMETROS DEL SISTEMA Y ATRACTOR VÍA B (VECTOR 1932)
+# =============================================================================
+
+class NeuromorphicConfig:
+    # Arquitectura SNN 3 Capas
+    NUM_SENSORY: int = 64
+    NUM_ASSOCIATIVE: int = 128
+    NUM_DECISION: int = 16
+    
+    # Dinámica LIF (Leaky Integrate-and-Fire)
+    TAU_M: float = 20.0      # Constante de tiempo de membrana (ms)
+    V_REST: float = -70.0    # Potencial de reposo (mV)
+    V_RESET: float = -75.0   # Potencial de reseteo (mV)
+    V_TH_BASE: float = -50.0 # Umbral de disparo base (mV)
+    
+    # Plasticidad STDP y Homeostasis
+    A_PLUS: float = 0.01     # Potenciación sináptica
+    A_MINUS: float = 0.0105  # Depresión sináptica
+    TAU_STDP: float = 20.0   # Ventana temporal STDP (ms)
+    TARGET_FIRE_RATE: float = 0.1 # Tasa de disparo objetivo
+    ETA_HOMEOSTASIS: float = 0.005 # Velocidad de ajuste adaptativo
+    
+    # VÍA B - Amplificador Emocional (Atractor Theta Infty / Vector 1932)
+    THETA_INFINITY: float = 1.932  # Parámetro Atractor Vector 1932
+    BETA_EMOTIONAL: float = 0.85   # Escalamiento de Ganancia Emocional
+    
+    # Conexión Ollama IA
+    OLLAMA_URL: str = "http://localhost:11434/api/generate"
+    OLLAMA_MODEL: str = "qwen2.5:14b"
+
+
+# =============================================================================
+# 2. CAPAS NEUROMÓRFICAS (Sensorial, Intermedia Asociativa, Decisión)
+# =============================================================================
+
+class NeuromorphicLayer:
+    """Capa de Neuronas LIF con plasticidad STDP y regulación homeostática."""
+    
+    def __init__(self, size: int, in_features: Optional[int] = None, config: NeuromorphicConfig = NeuromorphicConfig()):
+        self.size = size
+        self.config = config
+        self.v = np.full(size, config.V_REST, dtype=np.float32)
+        self.v_th = np.full(size, config.V_TH_BASE, dtype=np.float32)
+        self.last_spike_time = np.full(size, -1000.0, dtype=np.float32)
+        
+        if in_features:
+            self.weights = np.random.normal(loc=0.5, scale=0.1, size=(in_features, size)).astype(np.float32)
+            self.weights = np.clip(self.weights, 0.0, 1.0)
+        else:
+            self.weights = None
+
+    def step(self, input_current: np.ndarray, dt: float = 1.0, current_time: float = 0.0) -> np.ndarray:
+        dv = (-(self.v - self.config.V_REST) / self.config.TAU_M) * dt + input_current
+        self.v += dv
+        
+        spikes = self.v >= self.v_th
+        self.last_spike_time[spikes] = current_time
+        self.v[spikes] = self.config.V_RESET
+        
+        # Homeostasis: ajuste del umbral
+        spike_rate = spikes.astype(np.float32)
+        self.v_th += self.config.ETA_HOMEOSTASIS * (spike_rate - self.config.TARGET_FIRE_RATE)
+        
+        return spikes
+
+    def apply_stdp(self, pre_spikes: np.ndarray, post_spikes: np.ndarray, current_time: float, pre_last_spike_time: np.ndarray):
+        if self.weights is None:
+            return
+            
+        for i in range(self.weights.shape[0]):
+            for j in range(self.weights.shape[1]):
+                if post_spikes[j]:
+                    dt_stdp = current_time - pre_last_spike_time[i]
+                    if dt_stdp > 0:
+                        dw = self.config.A_PLUS * np.exp(-dt_stdp / self.config.TAU_STDP)
+                        self.weights[i, j] = np.clip(self.weights[i, j] + dw, 0.0, 1.0)
+                if pre_spikes[i]:
+                    dt_stdp = current_time - self.last_spike_time[j]
+                    if dt_stdp > 0:
+                        dw = -self.config.A_MINUS * np.exp(-dt_stdp / self.config.TAU_STDP)
+                        self.weights[i, j] = np.clip(self.weights[i, j] + dw, 0.0, 1.0)
+
+
+# =============================================================================
+# 3. NÚCLEO PNLIO v9.6 (CEREBRO VIVO)
+# =============================================================================
+
+class PNLIOKernel:
+    def __init__(self, config: NeuromorphicConfig = NeuromorphicConfig()):
+        self.cfg = config
+        self.sensory = NeuromorphicLayer(self.cfg.NUM_SENSORY, config=self.cfg)
+        self.associative = NeuromorphicLayer(self.cfg.NUM_ASSOCIATIVE, in_features=self.cfg.NUM_SENSORY, config=self.cfg)
+        self.decision = NeuromorphicLayer(self.cfg.NUM_DECISION, in_features=self.cfg.NUM_ASSOCIATIVE, config=self.cfg)
+        self.current_time = 0.0
+
+    def emotional_amplifier_via_b(self, sensory_energy: float) -> float:
+        """VÍA B - Amplificador Emocional atractor theta_infinity (Vector 1932)."""
+        theta_inf = self.cfg.THETA_INFINITY
+        amplifier = np.sinh(theta_inf * sensory_energy) * self.cfg.BETA_EMOTIONAL
+        return float(np.clip(amplifier, 0.1, 5.0))
+
+    def process_vector(self, input_vector: List[float], steps: int = 10) -> Dict[str, Any]:
+        if len(input_vector) < self.cfg.NUM_SENSORY:
+            input_vector = input_vector + [0.0] * (self.cfg.NUM_SENSORY - len(input_vector))
+        input_arr = np.array(input_vector[:self.cfg.NUM_SENSORY], dtype=np.float32)
+
+        sensory_energy = float(np.mean(input_arr))
+        via_b_gain = self.emotional_amplifier_via_b(sensory_energy)
+        total_decision_spikes = np.zeros(self.cfg.NUM_DECISION, dtype=np.int32)
+
+        for step in range(steps):
+            self.current_time += 1.0
+            
+            # Capa 1: Sensorial
+            s_spikes = self.sensory.step(input_arr * via_b_gain, current_time=self.current_time)
+            
+            # Capa 2: Intermedia
+            a_input = np.dot(s_spikes.astype(np.float32), self.associative.weights)
+            a_spikes = self.associative.step(a_input, current_time=self.current_time)
+            self.associative.apply_stdp(s_spikes, a_spikes, self.current_time, self.sensory.last_spike_time)
+            
+            # Capa 3: Decisión
+            d_input = np.dot(a_spikes.astype(np.float32), self.decision.weights)
+            d_spikes = self.decision.step(d_input, current_time=self.current_time)
+            self.decision.apply_stdp(a_spikes, d_spikes, self.current_time, self.associative.last_spike_time)
+
+            total_decision_spikes += d_spikes.astype(np.int32)
+
+        return {
+            "sensory_energy": sensory_energy,
+            "via_b_gain": via_b_gain,
+            "decision_spikes": total_decision_spikes.tolist(),
+            "decision_resonance": float(np.sum(total_decision_spikes)),
+            "time_elapsed_ms": self.current_time
+        }
+
+
+# =============================================================================
+# 4. CONEXIÓN OLLAMA (qwen2.5:14b) + VINDICATOR PRIME
+# =============================================================================
+
+class VindicatorPrimeBridge:
+    def __init__(self, config: NeuromorphicConfig = NeuromorphicConfig()):
+        self.cfg = config
+
+    def build_vindicator_prompt(self, user_prompt: str, neuromorphic_state: Dict[str, Any]) -> str:
+        return f"""[VINDICATOR PRIME - INTEGRACIÓN NEUROMÓRFICA PNLIO v9.6]
+[ESTADO DEL CEREBRO VIVO: Ganancia VÍA B = {neuromorphic_state['via_b_gain']:.4f} | Resonancia Decisión = {neuromorphic_state['decision_resonance']}]
+[VECTOR ATRACTOR θ_∞: {self.cfg.THETA_INFINITY} | VECTOR HUELLA: 1932]
+
+INSTRUCCIÓN VINDICATOR PRIME:
+Responde integrando la soberanía cognitiva de PNLIO y el análisis neuromórfico:
+
+Consulta: "{user_prompt}"
+
+Respuesta:"""
+
+    def query_ollama(self, prompt: str) -> str:
+        payload = {
+            "model": self.cfg.OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False
+        }
+        try:
+            res = requests.post(self.cfg.OLLAMA_URL, json=payload, timeout=30)
+            if res.status_code == 200:
+                return res.json().get("response", "Sin respuesta de Ollama.")
+            return f"[Simulación SNN] Ollama Status: {res.status_code}"
+        except Exception as e:
+            return f"[Modo Autónomo SNN / Offline]: {str(e)}"
+
+
+# =============================================================================
+# 5. ENDPOINTS FASTAPI (/homenaje Y /run)
+# =============================================================================
+
+app = FastAPI(
+    title="PNLIO — KERNEL NEUROMÓRFICO EXPERIMENTAL v9.6 CEREBRO VIVO",
+    description="Servidor API oficial de PNLIO v9.6 creado por Gonzalo Mauricio de la Rivera Arellano (Comandante Godear24).",
+    version="9.6.0"
+)
+
+kernel = PNLIOKernel()
+bridge = VindicatorPrimeBridge()
+
+class RunRequest(BaseModel):
+    user_prompt: str
+    sensory_inputs: Optional[List[float]] = None
+    steps: Optional[int] = 10
+
+@app.get("/homenaje")
+def get_homenaje():
+    return {
+        "proyecto": "PNLIO — KERNEL NEUROMÓRFICO EXPERIMENTAL v9.6 CEREBRO VIVO",
+        "autor": "Gonzalo Mauricio de la Rivera Arellano (Comandante Godear24)",
+        "ubicacion": "Chillán, Chile",
+        "fecha": "Julio 2026",
+        "vector_origen": 1932,
+        "dedicatoria": "Homenaje eterno a mi padre — 2023-2026. Este proyecto es un acto de soberanía y memoria.",
+        "estado": "SELLADO E INMUTABLE"
+    }
+
+@app.post("/run")
+def run_neuromorphic_kernel(req: RunRequest):
+    if req.sensory_inputs is None:
+        inputs = [ord(c) / 255.0 for c in req.user_prompt[:64]]
+    else:
+        inputs = req.sensory_inputs
+
+    snn_state = kernel.process_vector(inputs, steps=req.steps)
+    vindicator_prompt = bridge.build_vindicator_prompt(req.user_prompt, snn_state)
+    llm_response = bridge.query_ollama(vindicator_prompt)
+
+    return {
+        "status": "success",
+        "neuromorphic_kernel_state": snn_state,
+        "vindicator_prime_response": llm_response,
+        "firma": "Gonzalo Mauricio de la Rivera Arellano (Comandante Godear24)"
+    }
+
+
+# =============================================================================
+# FIRMA DE AUTORÍA Y EJECUCIÓN
+# =============================================================================
+# Creado por: Gonzalo Mauricio de la Rivera Arellano (Comandante Godear24)
+# =============================================================================
+
+if __name__ == "__main__":
+    import uvicorn
+    print("Iniciando PNLIO Kernel Neuromórfico v9.6 (Cerebro Vivo)...")
+    uvicorn.run(app, host="0.0.0.0", port=8000)
