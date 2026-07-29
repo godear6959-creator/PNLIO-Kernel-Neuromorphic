@@ -27,17 +27,18 @@
    * Regla de aprendizaje biológico adaptativo para regulación de umbrales.
 4. **Integración IA:**
    * Puente dinámico con Ollama para inyección de estado neuromórfico en **VINDICATOR PRIME**.
-
----
-
 ## 🚀 Instalación y Ejecución
 
 ```bash
 # 1. Clonar el repositorio
 git clone [https://github.com/godear6959-creator/PNLIO-Kernel-Neurom-rfico-Experimental-v9.6-Cerebro-Vivo-.-Homenaje-eterno-a-mi-padre-2023-2026-.git](https://github.com/godear6959-creator/PNLIO-Kernel-Neurom-rfico-Experimental-v9.6-Cerebro-Vivo-.-Homenaje-eterno-a-mi-padre-2023-2026-.git)
 
-# 2. Instalar dependencias
+# 2. Entrar a la carpeta del proyecto
+cd PNLIO-Kernel-Neurom-rfico-Experimental-v9.6-Cerebro-Vivo-.-Homenaje-eterno-a-mi-padre-2023-2026-
+
+# 3. Instalar dependencias
 pip install fastapi uvicorn numpy requests
 
-# 3. Ejecutar el Kernel
+# 4. Ejecutar el Kernel
 python main.py
+````
