@@ -1,5 +1,4 @@
 ![Imagen Principal](gonzalo-mauricio-de-la-rivera-arellano-geminis-imagen-generada-4zd3tz4zd3tz4zd3.png)
-
 # Núcleo de inferencia neuromórfica (NIK) v10.1 — Edición universal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
