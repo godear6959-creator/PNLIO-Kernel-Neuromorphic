@@ -3,7 +3,7 @@
 # Núcleo de inferencia neuromórfica (NIK) v10.1 — Edición universal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
 
 **NIK v10.1** es un núcleo de inferencia neuromórfica local diseñado para operar con arquitectura *offline-first*. Integra una red neuronal de impulsos (Spiking Neural Network - SNN) de tres capas (64-128-16) con aprendizaje biológico adaptativo, regulación homeostática y un puente de integración directa con modelos de lenguaje locales ejecutados en Ollama.
