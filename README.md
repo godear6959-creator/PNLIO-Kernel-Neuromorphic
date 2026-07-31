@@ -1,4 +1,4 @@
-![Imagen](/gonzalo-mauricio-de-la-rivera-arellano-geminis-imagen-generada-4zd3tz4zd3tz4zd3.png)
+![Imagen Principal](gonzalo-mauricio-de-la-rivera-arellano-geminis-imagen-generada-4zd3tz4zd3tz4zd3.png)
 # PNLIO Kernel Neuromorfico v10 Transcendence
 
 DEDICATORIA: Homenaje eterno a mi padre 2023-2026. Este proyecto es un acto de soberania y memoria.
