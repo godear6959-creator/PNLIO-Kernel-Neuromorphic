@@ -1,4 +1,8 @@
-![Imagen Principal](ruta/de/tu/imagen.png)
+# PNLIO Kernel Neuromorfico v10 Transcendence
+
+<!-- Aquí va SKINNER - la subimos después -->
+
+DEDICATORIA: Homenaje eterno...
 commit -m "Corregir ruta de imagen" && git push origin main
 # PNLIO Kernel Neuromorfico v10 Transcendence
 
