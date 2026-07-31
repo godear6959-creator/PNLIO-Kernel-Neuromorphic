@@ -1,4 +1,4 @@
-![Imagen Principal](gonzalo-mauricio-de-la-rivera-arellano-geminis-imagen-generada-4zd3tz4zd3tz4zd3.png)
+![Imagen Principal](ruta/de/tu/imagen.png)
 commit -m "Corregir ruta de imagen" && git push origin main
 # PNLIO Kernel Neuromorfico v10 Transcendence
 
