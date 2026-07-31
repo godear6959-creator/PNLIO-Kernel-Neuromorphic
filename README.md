@@ -51,3 +51,7 @@
 ```bash
 # Descargar e instalar el modelo por defecto en Ollama
 ollama pull qwen2.5:14b
+
+
+
+
