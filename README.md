@@ -1,5 +1,6 @@
-![Imagen Principal](gonzalo-mauricio-de-la-rivera-arellano-gemini-generated-image-4zd3tz4zd3tz4zd3.png)
-# Neuromorphic Inference Kernel (NIK) v10.1 — Universal Edition
+![Imagen Principal](gonzalo-mauricio-de-la-rivera-arellano-geminis-imagen-generada-4zd3tz4zd3tz4zd3.png)
+
+# Núcleo de inferencia neuromórfica (NIK) v10.1 — Edición universal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
@@ -50,7 +51,3 @@
 ```bash
 # Descargar e instalar el modelo por defecto en Ollama
 ollama pull qwen2.5:14b
-
-
-
-
