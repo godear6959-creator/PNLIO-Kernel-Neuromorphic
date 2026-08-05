@@ -1,0 +1,456 @@
+% ============================================================
+% CAPÍTULO 6
+% ============================================================
+\chapter{Despliegue e Instalación}
+
+\section{Requisitos Previos}
+
+Antes de iniciar el ensamblaje de FERMIER v7.1.6-R, verifique la disponibilidad de los siguientes elementos:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Categoría} & \textbf{Ítem} & \textbf{Especificación / Notas} \\ \hline
+\multirow{5}{*}{Herramientas} 
+ & Torquímetro dinamométrico & Rango 0.5--5 N·m, precisión $\pm$2\% \\ 
+ & Llaves Allen métricas & 1.5, 2.0, 2.5, 3.0, 4.0 mm \\ 
+ & Multímetro digital & True-RMS, capacidad de medición LiPo 12S (hasta 50 V) \\ 
+ & Osciloscopio portátil (opcional) & Verificación de conmutación SSR ($<2\,\mu$s) \\ 
+ & Estación de soldadura & Punta fina, temperatura regulada 320--350 $^\circ$C \\ \hline
+\multirow{3}{*}{Software} 
+ & Firmware de vuelo & ArduPilot / PX4 compatible con H-Frame asimétrico \\ 
+ & Kernel PNLIO v2.1-OPT & Repositorio: \texttt{github.com/godear6959-creator/PNLIO-Framework} \\ 
+ & Intérprete Python 3.10+ & Dependencias: \texttt{numpy}, \texttt{sqlite3}, \texttt{json}, \texttt{ollama} (modo local) \\ \hline
+\multirow{3}{*}{Consumibles} 
+ & Loctite 243 & Fijación de tornillería en aluminio 7075-T6 \\ 
+ & Pasta térmica conductiva & Coeficiente $\geq$ 3 W/m·K para disipadores aviónica \\ 
+ & Cinta de cobre EMI & Blindaje de la bahía de aviónica \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{quote}
+\textbf{ADVERTENCIA:} La batería principal LiPo 12S 10000 mAh (44.4 V nominal) almacena 444 Wh de energía. Un cortocircuito puede generar corrientes superiores a 200 A. Utilice siempre guantes anticorte y gafas de protección durante la instalación eléctrica.
+\end{quote}
+
+\section{Ensamblaje de la Estructura Mecánica (H-Frame Asimétrico)}
+
+El H-Frame asimétrico de FERMIER v7.1.6-R prioriza la estabilidad longitudinal para compensar el desplazamiento del centro de gravedad (CG) hacia la bahía de aviónica y la batería principal.
+
+\subsection{Montaje del Chasis Central}
+
+\begin{enumerate}
+    \item \textbf{Placas centrales:} Fije las dos placas centrales de aluminio 7075-T6 (180 g cada una) utilizando los cuatro perfiles de unión de fibra de carbono. Aplique Loctite 243 en cada interfaz roscada.
+    \item \textbf{Par de apriete:} 2.8 N·m en los tornillos M3$\times$12 de unión central; 2.2 N·m en los tornillos M2.5$\times$8 de los brazos.
+    \item \textbf{Verificación de simetría:} Coloque el chasis sobre una superficie nivelada. La diferencia de altura entre los planos de motor M1--M2 y M3--M4 no debe exceder 1.0 mm. Corrija mediante arandelas de ajuste de 0.5 mm si es necesario.
+\end{enumerate}
+
+\subsection{Instalación de los Brazos y Motores}
+
+Los brazos del H-Frame presentan una longitud diferencial: los brazos frontales (M1, M2) son 40 mm más cortos que los traseros (M3, M4) para contrarrestar la masa de la cámara NDVI montada en proa.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Posición} & \textbf{Longitud del brazo} & \textbf{Sentido de rotación} \\ \hline
+M1 (frontal izquierdo) & 220 mm & Horario (CW) \\ \hline
+M2 (frontal derecho) & 220 mm & Antihorario (CCW) \\ \hline
+M3 (trasero izquierdo) & 260 mm & Antihorario (CCW) \\ \hline
+M4 (trasero derecho) & 260 mm & Horario (CW) \\ \hline
+\end{tabular}
+\end{table}
+
+Asegure los motores brushless en las zapatas de aluminio. Verifique que el cableado de fases (A, B, C) permita una curvatura de radio $\geq$ 15 mm para evitar fatiga por vibración.
+
+\subsection{Bahía de Aviónica y Blindaje EMI}
+
+\begin{enumerate}
+    \item Monte la bahía de aviónica en el compartimento central, desplazada 25 mm hacia la proa respecto al centro geométrico.
+    \item Aplique cinta de cobre conductiva en el interior de la bahía, creando una jaula de Faraday continua con una apertura máxima de malla equivalente $< \lambda/20$ a 2.4 GHz.
+    \item Instale la divisoria de Kevlar entre la aviónica y la batería principal. Esta divisoria actúa como barrera térmica (reducción de 12--15 $^\circ$C en la bahía durante vuelo sostenido) y como contención estructural ante eventos de inflado de la LiPo.
+\end{enumerate}
+
+\section{Instalación del Sistema Eléctrico}
+
+\subsection{Batería Principal y Auxiliar}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Parámetro} & \textbf{Batería Principal} & \textbf{Batería Auxiliar} \\ \hline
+Ubicación & Compartimento inferior central & Compartimento superior trasero \\ \hline
+Conexión & XT90-S antichispa & XT60 \\ \hline
+Fusible & 80 A automático & 15 A rápido \\ \hline
+Cableado principal & AWG 10, silicona & AWG 16, silicona \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{enumerate}
+    \item Inserte la batería principal LiPo 12S 10000 mAh en su compartimento. El arnés de sujeción debe permitir extracción en $<$ 10 s para protocolos de emergencia.
+    \item Conecte la batería auxiliar LiPo 12S 2200 mAh al módulo SSR. Este módulo monitorea la tensión de la principal en tiempo real.
+\end{enumerate}
+
+\subsection{Módulo SSR (Solid-State Switchover)}
+
+El SSR constituye el núcleo de redundancia eléctrica de FERMIER. Su tiempo de conmutación garantizado es $<2\,\mu$s.
+
+\textbf{Procedimiento de cableado:}
+\begin{enumerate}
+    \item \textbf{Entrada principal:} Conecte la salida del BEC de la batería principal (regulado a 5.2 V / 6 A) al pin \texttt{VIN\_MAIN} del SSR.
+    \item \textbf{Entrada auxiliar:} Conecte la salida del BEC de la batería auxiliar al pin \texttt{VIN\_AUX}.
+    \item \textbf{Salida aviónica:} El pin \texttt{VOUT} alimenta el flight controller, la cámara NDVI y el microcontrolador del kernel PNLIO.
+    \item \textbf{Umbral de disparo:} El firmware del SSR está calibrado de fábrica a \textbf{39.6 V} (corregido en v7.1.6-R, vs.\ 15.0 V en v7.1.5-R). Este umbral protege contra descarga profunda de las celdas LiPo 12S ($3.3\,\text{V/celda} \times 12 = 39.6\,\text{V}$).
+\end{enumerate}
+
+\textbf{Verificación del SSR:}
+\begin{itemize}
+    \item Aplique tensión nominal (44.4 V) en \texttt{VIN\_MAIN}. Mida \texttt{VOUT} = 5.2 V.
+    \item Reduzca \texttt{VIN\_MAIN} lentamente con una carga resistiva. Al alcanzar 39.5 V, el LED de estado del SSR debe cambiar de verde a ámbar; a 39.6 V, la conmutación a \texttt{VIN\_AUX} debe ocurrir sin caída de tensión detectable en \texttt{VOUT} (verificar con osciloscopio, caída $<$ 50 mV).
+\end{itemize}
+
+\subsection{Panel Solar y MPPT 12S}
+
+El módulo solar de 25 W (monocristalino, eficiencia $\geq$ 20\%) se instala en la cubierta superior del H-Frame.
+
+\begin{enumerate}
+    \item Fije el panel con cuatro soportes articulados de nylon reforzado. El ángulo de incidencia óptimo para carga en terreno es 30$^\circ$ respecto a la horizontal.
+    \item Conecte la salida del panel (18 V / 1.4 A en condiciones STC) al regulador MPPT 12S.
+    \item El MPPT eleva la tensión a 50.4 V ($4.2\,\text{V/celda} \times 12$) para carga de mantenimiento de la batería auxiliar. El tiempo de carga completa desde 20\% SOC es de 6--7 horas de insolación directa.
+\end{enumerate}
+
+\begin{quote}
+\textbf{Nota de versión v7.1.6-R:} El panel solar y el MPPT 12S son adiciones respecto a v7.1.5-R. Anteriormente, la batería auxiliar solo se recargaba en base. Esta mejora permite autonomía extendida en operaciones de terreno.
+\end{quote}
+
+\section{Instalación de la Aviónica}
+
+\subsection{Flight Controller y Sensores}
+
+\begin{enumerate}
+    \item Monte el flight controller sobre amortiguadores de gel de sílice (duro 30 Shore A) para aislamiento de vibraciones de los motores ($>$ 80 Hz).
+    \item Oriente la flecha de proa del FC coincidente con el eje longitudinal del H-Frame (dirección M1--M2).
+    \item Conecte los ESCs a los puertos de salida siguiendo la secuencia: M1 $\rightarrow$ Salida 1, M2 $\rightarrow$ Salida 2, M3 $\rightarrow$ Salida 3, M4 $\rightarrow$ Salida 4.
+\end{enumerate}
+
+\subsection{Cámara NDVI}
+
+La cámara multiespectral NDVI se monta en la proa, suspendida en una plataforma de amortiguación de caucho butílico.
+
+\begin{itemize}
+    \item \textbf{Interfaz:} UART (telemetría) + GPIO (trigger).
+    \item \textbf{Resolución:} 1280$\times$960 px, banda roja (660 nm) e infrarroja cercana (840 nm).
+    \item \textbf{Calibración radiométrica:} Realice una calibración con panel reflectante blanco (Spectralon) antes del primer vuelo. El coeficiente de calibración se almacena en el archivo \texttt{cal\_ndvi.json} del kernel PNLIO.
+\end{itemize}
+
+\subsection{Unidad de Procesamiento del Kernel PNLIO}
+
+El kernel PNLIO v2.1-OPT requiere una unidad de procesamiento local. La configuración mínima validada es:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Componente} & \textbf{Especificación} \\ \hline
+Microcontrolador / SBC & Raspberry Pi 4B (4 GB RAM) o equivalente ARM64 \\ \hline
+Almacenamiento & MicroSD UHS-I 64 GB (clase A2) para SQLite WAL \\ \hline
+Comunicación & UART al flight controller, I2C a sensores ambientales \\ \hline
+Runtime & Ollama 0.3.x + modelo Phi-3 Mini (modo air-gapped) \\ \hline
+\end{tabular}
+\end{table}
+
+Instale el kernel en \texttt{/opt/pnlio/}. La estructura de directorios debe ser:
+
+\begin{verbatim}
+/opt/pnlio/
+├── kernel/
+│   ├── pnlio_core.py
+│   ├── metrics.py          # Δθ, C, IRE
+│   └── ssr_guard.py        # Monitoreo de conmutación
+├── data/
+│   ├── agronomic_vector.json
+│   ├── calibration/
+│   └── telemetry_wal.db
+└── models/
+    └── phi3_q4.gguf
+\end{verbatim}
+
+\section{Carga de Firmware y Calibración Inicial}
+
+\subsection{Firmware de Vuelo}
+
+\begin{enumerate}
+    \item Cargue el firmware ArduPilot (Copter 4.5+) o PX4 (v1.14+) compatible con H-Frame.
+    \item Configure el tipo de frame: \texttt{FRAME\_CLASS = 3} (H-Frame) en ArduPilot, o \texttt{CA\_AIRFRAME = 1} (quad H) en PX4.
+    \item Ajuste los parámetros de asimetría: \texttt{MOT\_YAW\_HEADROOM} incrementado en 15\% para compensar el brazo trasero más largo.
+\end{enumerate}
+
+\subsection{Calibración del Kernel PNLIO}
+
+Ejecute el script de inicialización:
+
+\begin{verbatim}
+cd /opt/pnlio/kernel
+python3 init_pnlio.py --calibrate
+\end{verbatim}
+
+Este script realiza:
+\begin{enumerate}
+    \item \textbf{Calibración de $\Delta\tau$:} Sincroniza el reloj de alta resolución del SBC con \texttt{time.time()} (corrección v7.1.6-R; en v7.1.5-R se usaba un contador de ciclos propenso a desbordamiento).
+    \item \textbf{Carga del vector agronómico:} Lee \texttt{agronomic\_vector.json} y valida su esquema contra el esquema PNLIO v2.1. En versiones anteriores, este vector se generaba aleatoriamente, introduciendo incertidumbre en las métricas.
+    \item \textbf{Prueba de SQLite WAL:} Crea la base de datos \texttt{telemetry\_wal.db} con modo WAL habilitado, garantizando integridad de datos en escrituras concurrentes durante vuelo.
+\end{enumerate}
+
+\subsection{Checklist Pre-Instalación}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|p{10cm}|c|}
+\hline
+\textbf{\#} & \textbf{Verificación} & \textbf{Estado} \\ \hline
+1 & Tornillería central apretada a torque especificado & $\square$ \\ \hline
+2 & CG dentro del 5\% del centro geométrico & $\square$ \\ \hline
+3 & SSR conmuta correctamente a 39.6 V & $\square$ \\ \hline
+4 & Tensión de batería principal $\geq$ 44.0 V ($\geq$ 3.67 V/celda) & $\square$ \\ \hline
+5 & Tensión de batería auxiliar $\geq$ 44.0 V & $\square$ \\ \hline
+6 & Cámara NDVI responde a trigger GPIO & $\square$ \\ \hline
+7 & Kernel PNLIO carga vector JSON sin errores & $\square$ \\ \hline
+8 & Modo air-gapped: sin interfaces WiFi/Bluetooth activas & $\square$ \\ \hline
+9 & Panel solar limpio y sin microgrietas & $\square$ \\ \hline
+10 & SQLite WAL activo y espacio libre en SD $>$ 10 GB & $\square$ \\ \hline
+\end{tabular}
+\end{table}
+
+
+% ============================================================
+% CAPÍTULO 7
+% ============================================================
+\chapter{Operación y Flujos de Trabajo}
+
+\section{Preparación de Misión}
+
+\subsection{Planificación del Vuelo}
+
+FERMIER v7.1.6-R opera en entornos \textbf{air-gapped}; por tanto, toda la planificación se realiza previamente en estación base y se carga vía cable USB-C o tarjeta SD.
+
+\begin{enumerate}
+    \item \textbf{Definición del polígono:} Utilice QGroundControl o Mission Planner para delimitar el área agronómica. Exporte el archivo \texttt{.waypoints} al directorio \texttt{/opt/pnlio/missions/}.
+    \item \textbf{Carga del vector agronómico:} El archivo \texttt{agronomic\_vector.json} debe contener, como mínimo, los siguientes campos estructurados:
+\end{enumerate}
+
+\begin{verbatim}
+{
+  "crop_type": "trigo_durum",
+  "growth_stage": "espigazon",
+  "expected_ndvi_range": [0.45, 0.82],
+  "alert_thresholds": {
+    "ndvi_min": 0.35,
+    "ire_min": 2.1
+  },
+  "temporal_resolution_sec": 5.0
+}
+\end{verbatim}
+
+El kernel PNLIO utiliza este vector para contextualizar las métricas matemáticas ($\Delta\theta$, $C$, $IRE$) en términos agronómicos concretos.
+
+\subsection{Secuencia de Encendido}
+
+Siga estrictamente el orden de encendido para evitar picos de corriente en la aviónica:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Paso} & \textbf{Acción} & \textbf{Indicador Esperado} \\ \hline
+1 & Insertar batería auxiliar & LED SSR: verde (modo standby) \\ \hline
+2 & Insertar batería principal & LED SSR: verde brillante; FC inicia boot \\ \hline
+3 & Esperar 15 s & GPS: fix 3D (mínimo 8 satélites) \\ \hline
+4 & Activar switch de seguridad & Buzzer: tono de confirmación \\ \hline
+5 & Iniciar kernel PNLIO & Terminal: \texttt{PNLIO v2.1-OPT ready. Δτ=time.time()} \\ \hline
+6 & Verificar modo air-gapped & \texttt{ip link show} $\rightarrow$ sin interfaces wlan0, bluetooth0 \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Flujo de Validación en Tiempo Real (Kernel PNLIO)}
+
+Durante el vuelo, el kernel PNLIO ejecuta un ciclo de validación matemática continua sobre cada paquete de telemetría.
+
+\subsection{Adquisición de Datos Brutos}
+
+El flight controller transmite a 10 Hz vía UART:
+
+\begin{itemize}
+    \item Vector de actitud: $\vec{v}_a$ (roll, pitch, yaw en radianes)
+    \item Vector de heading: $\vec{v}_h$ (dirección de deriva del viento + rumbo GPS)
+    \item Timestamp de alta resolución: $t$ (segundos desde epoch, float64)
+\end{itemize}
+
+\subsection{Cálculo de Métricas PNLIO}
+
+Para cada muestra $i$, el kernel computa:
+
+\textbf{1. Coherencia Angular ($\Delta\theta$):}
+\begin{equation}
+\Delta\theta_i = \vec{v}_{h,i} \cdot \vec{v}_{a,i}
+\end{equation}
+Donde $\cdot$ denota el producto punto normalizado. $\Delta\theta \in [-1, 1]$. Valores cercanos a 1 indican alineación perfecta entre heading y actitud.
+
+\textbf{2. Coherencia Pura ($C$):}
+\begin{equation}
+C_i = \frac{\Delta\theta_i}{\max(10^{-6}, \Delta\tau_i)}
+\end{equation}
+Donde $\Delta\tau_i = t_i - t_{i-1}$ (diferencia de tiempo real, no contador de ciclos). El denominador protegido con $10^{-6}$ evita división por cero en congelamientos del sistema operativo.
+
+\textbf{3. Entropía Textual ($H_{txt}$):}
+$H_{txt}$ se deriva del análisis de la imagen NDVI recién capturada. Se cuantiza la distribución de píxeles en 256 bins y se aplica entropía de Shannon:
+\begin{equation}
+H_{txt} = -\sum_{k=0}^{255} p_k \log_2(p_k)
+\end{equation}
+Donde $p_k$ es la frecuencia normalizada del bin $k$.
+
+\textbf{4. Índice de Realidad Extendida ($IRE$):}
+\begin{equation}
+IRE_i = C_i \cdot \log_2(1.0 + H_{txt})
+\end{equation}
+$IRE$ combina la estabilidad cinemática del dron ($C$) con la complejidad informativa de la escena agronómica ($H_{txt}$). Un $IRE$ alto indica datos fiables y ricos en información.
+
+\subsection{Reglas de Validación y Almacenamiento}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{4cm}|p{9cm}|}
+\hline
+\textbf{Condición} & \textbf{Acción del Kernel} \\ \hline
+$C \geq 0.75$ (Efecto Reflex) & Datos validados. Se habilita almacenamiento en SQLite WAL y trigger de cámara NDVI para siguiente waypoint. \\ \hline
+$0.50 \leq C < 0.75$ & Datos almacenados con flag \texttt{unstable}. Se emite advertencia en telemetría local. \\ \hline
+$C < 0.50$ & Datos descartados. Se registra evento en \texttt{pnlio\_anomalies.log}. Se activa modo de espera de 2 s para nueva muestra. \\ \hline
+$IRE <$ \texttt{alert\_thresholds.ire\_min} & Se marca el waypoint para reinspección. El flight controller reduce velocidad de crucero al 60\%. \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Persistencia Air-Gapped}
+
+Toda la telemetría validada se escribe en \texttt{telemetry\_wal.db} utilizando el modo \textbf{Write-Ahead Logging (WAL)} de SQLite. Esta configuración ofrece:
+
+\begin{itemize}
+    \item \textbf{Atomicidad:} Las transacciones de telemetría son atómicas incluso ante corte de energía (mitigado por el SSR).
+    \item \textbf{Concurrencia:} Lecturas de análisis (post-vuelo) no bloquean escrituras en vuelo.
+    \item \textbf{Portabilidad:} La base de datos es un único archivo de $\sim$50 MB/h de vuelo, extraíble físicamente.
+\end{itemize}
+
+\section{Modos de Operación}
+
+\subsection{Modo Vuelo Autónomo (MVA)}
+
+\begin{itemize}
+    \item \textbf{Descripción:} FERMIER ejecuta la misión preprogramada de waypoints.
+    \item \textbf{Velocidad de crucero:} 8--12 m/s (ajustable por $IRE$ en tiempo real).
+    \item \textbf{Altitud de trabajo:} 30--80 m AGL (Above Ground Level), óptima para NDVI.
+    \item \textbf{Autonomía:} 30--40 minutos con batería principal al 100\% SOC.
+\end{itemize}
+
+\textbf{Flujo de trabajo MVA:}
+\begin{verbatim}
+INICIO → Carga waypoints → Despegue RTL → Navegación waypoint N
+   ↓                                    ↓
+Validación PNLIO ←── IRE ≥ umbral ──── Captura NDVI
+   ↓                                    ↓
+Almacena WAL ←── C ≥ 0.75 ─────────── Continúa a N+1
+   ↓
+FIN MISIÓN → RTL (Return to Launch)
+\end{verbatim}
+
+\subsection{Modo Terreno Solar (MTS)}
+
+Activado manualmente tras aterrizaje o por fail-safe de batería principal $< 39.6$ V.
+
+\begin{itemize}
+    \item \textbf{Descripción:} FERMIER permanece en tierra como estación de monitoreo fija.
+    \item \textbf{Alimentación:} Batería auxiliar + panel solar 25 W vía MPPT 12S.
+    \item \textbf{Funciones:} Toma periódica de NDVI (cada 30 min), registro de datos ambientales (temperatura, humedad, radiación), transmisión local opcional vía LoRa 868 MHz.
+    \item \textbf{Autonomía:} 6--7 horas continuas con insolación directa; 4 horas en condiciones nubladas parciales.
+\end{itemize}
+
+\subsection{Modo Air-Gapped de Emergencia (MAE)}
+
+Activado automáticamente si el kernel detecta intento de handshake en puertos de red o si el SSR registra más de 3 conmutaciones en 60 s (indicativo de inestabilidad eléctrica severa).
+
+\begin{itemize}
+    \item Se apagan todos los transceptores RF no esenciales.
+    \item El flight controller opera en modo estabilizado manual (si hay operador) o RTL autónomo.
+    \item El kernel PNLIO entra en modo \textbf{logging mínimo}: solo almacena $\Delta\theta$, $C$ y estado del SSR, descartando $H_{txt}$ para reducir escrituras en SD.
+\end{itemize}
+
+\section{Protocolos de Emergencia}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{3.5cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Escenario} & \textbf{Condición de Disparo} & \textbf{Acción Automática} \\ \hline
+Fail-safe de batería & $V_{\text{main}} < 39.6$ V durante $> 500$ ms & SSR conmuta a auxiliar en $<2\,\mu$s; FC ejecuta RTL inmediato \\ \hline
+Pérdida de coherencia & $C < 0.25$ durante 5 s consecutivos & Hover en posición actual; espera recuperación de GPS/IMU \\ \hline
+Pérdida de señal RC & No heartbeat en 3 s & RTL autónomo \\ \hline
+Geofence violado & Posición fuera de polígono $\pm$ 20 m & Aterrizaje forzoso en punto seguro más cercano \\ \hline
+Temperatura bahía & $T > 65^\circ$C & Reducción de frecuencia de muestreo PNLIO al 50\%; ventilación pasiva \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Post-Vuelo: Extracción y Análisis}
+
+\subsection{Extracción de Datos}
+
+\begin{enumerate}
+    \item Aterrice FERMIER en el punto de despegue.
+    \item Desconecte la batería principal (primero) y luego la auxiliar.
+    \item Extraiga la microSD del SBC o conecte cable USB-C.
+    \item Copie los archivos:
+    \begin{itemize}
+        \item \texttt{telemetry\_wal.db} (telemetría validada)
+        \item \texttt{pnlio\_anomalies.log} (eventos de descarte)
+        \item \texttt{ndvi\_captures/} (imágenes con metadatos $IRE$ incrustados en EXIF)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Análisis RCR v2.0}
+
+El índice de \textbf{Reducción de Confusión y Ruido (RCR) v2.0} cuantifica la calidad global de la misión:
+\begin{equation}
+RCR = \frac{N_{\text{valid}}}{N_{\text{total}}} \times \frac{\overline{IRE}}{\max(IRE)} \times \left(1 - \frac{N_{\text{anomalies}}}{100}\right)
+\end{equation}
+Donde:
+\begin{itemize}
+    \item $N_{\text{valid}}$ = muestras con $C \geq 0.75$
+    \item $N_{\text{total}}$ = muestras totales
+    \item $N_{\text{anomalies}}$ = eventos registrados en \texttt{pnlio\_anomalies.log}
+\end{itemize}
+
+Un $RCR > 0.85$ indica una misión de alta fidelidad, con reducción de alucinaciones/ruido del 87--92\% respecto a sistemas sin validación PNLIO.
+
+\subsection{Mantenimiento Post-Misión}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Componente} & \textbf{Intervalo} & \textbf{Acción} \\ \hline
+Tornillería estructural & Cada 5 vuelos & Retorqueo a especificación \\ \hline
+Bahía de aviónica & Cada 10 vuelos & Inspección visual de integridad del blindaje de cobre \\ \hline
+Conectores XT90/XT60 & Cada 3 vuelos & Limpieza con alcohol isopropílico; verificación de retención \\ \hline
+Panel solar & Cada vuelo & Limpieza con paño microfibra; verificación de voltaje en circuito abierto ($V_{oc} \approx 21$ V) \\ \hline
+Baterías LiPo & Cada vuelo & Almacenamiento a 3.85 V/celda (50\% SOC) si no se usarán en 48 h \\ \hline
+MicroSD & Cada 20 vuelos & Formateo completo (exFAT) para prevenir fragmentación WAL \\ \hline
+\end{tabular}
+\end{table}
+
+% ============================================================
+% REFERENCIAS CRUZADAS (Opcional, para tu control)
+% ============================================================
+% Umbral SSR 39.6 V        -> Cap. 4, Tabla 4.1, ítem 3
+% Δτ = time.time()         -> Cap. 4, Tabla 4.1, ítem 1
+% Vector agronómico JSON   -> Cap. 4, Tabla 4.1, ítem 2
+% Panel solar 25W + MPPT   -> Cap. 4, Tabla 4.1, ítem 4
+% Estructura H-Frame       -> Cap. 2.1, Fig. 2.1, Tabla 5.1
+% Ecuaciones Δθ, C, IRE    -> Cap. 3.1
+% Efecto Reflex (C≥0.75)   -> Cap. 8, Glosario
