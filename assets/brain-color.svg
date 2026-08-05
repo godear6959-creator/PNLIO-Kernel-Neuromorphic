@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="1200" height="600">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ff5f6d"/>
+      <stop offset="25%" stop-color="#ffc371"/>
+      <stop offset="50%" stop-color="#7bdff6"/>
+      <stop offset="75%" stop-color="#9b6bff"/>
+      <stop offset="100%" stop-color="#ff79c6"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="100%" height="100%" fill="#0f1724" />
+
+  <!-- colorful blob approximation of a brain -->
+  <g transform="translate(40,40) scale(0.9)">
+    <path d="M200 40 C120 40 70 90 70 150 C70 200 110 240 150 250 C140 280 150 320 200 330 C260 340 320 320 330 290 C380 300 450 280 470 230 C510 220 540 180 540 140 C540 90 490 50 420 40 C380 20 320 30 280 45 C240 30 220 40 200 40 Z"
+          fill="url(#g1)" opacity="0.95" />
+
+    <!-- internal folds (simple strokes) -->
+    <g stroke="#fff" stroke-opacity="0.15" stroke-width="8" fill="none" stroke-linecap="round">
+      <path d="M170 70 C160 90 150 110 150 140 C150 170 170 190 200 200 C230 210 250 215 280 210" />
+      <path d="M260 60 C240 90 230 120 240 150 C250 180 280 200 320 210 C350 220 380 215 400 200" />
+      <path d="M120 160 C140 180 170 190 200 195 C230 200 260 200 290 195 C320 190 350 180 380 160" />
+    </g>
+
+    <!-- subtle glow -->
+    <path d="M200 40 C120 40 70 90 70 150 C70 200 110 240 150 250 C140 280 150 320 200 330 C260 340 320 320 330 290 C380 300 450 280 470 230 C510 220 540 180 540 140 C540 90 490 50 420 40 C380 20 320 30 280 45 C240 30 220 40 200 40 Z"
+          fill="url(#g1)" filter="url(#soft)" opacity="0.25" />
+  </g>
+
+  <!-- caption -->
+  <text x="50%" y="94%" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="#cbd5e1" text-anchor="middle">Cerebro de colores — Kernel Neuromórfico (PNLIO)</text>
+</svg>
