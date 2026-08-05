@@ -1,0 +1,152 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+
+\lstset{style=pythonstyle}
+
+\title{\textbf{PNLIO Coherence Analyzer} \\ \large Framework PNLIO v1.1 -- Especificación y Analizador de Coherencia}
+\author{\textbf{Gonzalo Mauricio De la Rivera Arellano} (Comandante Godear24) \\
+\small ORCID: 0009-0001-9455-8416 \\
+\small Repositorio: \url{https://github.com/godear6959-creator/PNLIO-Framework}}
+\date{5 de agosto de 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta la formulación matemática y la implementación en Python del \textbf{PNLIO Coherence Analyzer} (v1.1). El sistema evalúa la coherencia semántica en secuencias de diálogo entre un usuario humano y un modelo de Inteligencia Artificial utilizando incrustaciones léxicas (\textit{embeddings}) y similitud coseno, identificando la emergencia del denominado \textbf{Efecto Reflex}.
+\end{abstract}
+
+\section{Fundamentación Matemática}
+
+La coherencia instantánea $C$ en la versión v1.1 del marco de trabajo PNLIO se define mediante la relación:
+
+\begin{equation}
+C = \frac{\Delta\theta}{\Delta\tau}
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item $\Delta\theta$ representa la similitud coseno entre la representación vectorial del input humano ($v_h$) y la respuesta generada por la IA ($v_a$):
+    \begin{equation}
+    \Delta\theta = \cos(v_h, v_a) = \frac{v_h \cdot v_a}{\|v_h\| \|v_a\|}
+    \end{equation}
+    \item $\Delta\tau$ denota el número de turno secuencial en la conversación ($\Delta\tau \in \{1, 2, 3, \dots\}$).
+    \item $C$ representa el índice de Coherencia Pura obtenido.
+\end{itemize}
+
+\section{Clasificación de Estados de Coherencia}
+
+En función del valor de $C$, el sistema clasifica el estado de alineación informacional según la Tabla~\ref{tab:estados}:
+
+\begin{table}[h]
+\centering
+\caption{Clasificación de Estados según el valor de Coherencia $C$}
+\label{tab:estados}
+\begin{tabular}{ll}
+\toprule
+\textbf{Rango de $C$} & \textbf{Estado del Sistema} \\
+\midrule
+$C < 0.50$ & Entrenamiento inicial \\
+$0.50 \le C < 0.75$ & Entrenamiento en progreso \\
+$0.75 \le C \le 0.90$ & \textbf{EFECTO REFLEX DETECTADO} \\
+$C > 0.90$ & Coherencia máxima \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Implementación en Python}
+
+A continuación se transcribe la clase principal \texttt{PNLIO\_Coherence\_Analyzer} correspondiente al cuaderno Jupyter original:
+
+\begin{lstlisting}[language=Python, caption={Clase PNLIO\_Coherence\_Analyzer}]
+import numpy as np
+from sentence_transformers import SentenceTransformer
+import matplotlib.pyplot as plt
+
+class PNLIO_Coherence_Analyzer:
+
+    def __init__(self, threshold_reflex=0.75, model_name='all-MiniLM-L6-v2'):
+        print('Cargando modelo embeddings...')
+        self.threshold_reflex = threshold_reflex
+        self.embedder = SentenceTransformer(model_name)
+        print('Modelo listo.')
+
+    def _delta_theta(self, human, ai):
+        emb_h = self.embedder.encode(human, normalize_embeddings=True)
+        emb_a = self.embedder.encode(ai, normalize_embeddings=True)
+        return float(np.dot(emb_h, emb_a))
+
+    def _classify(self, C):
+        if C < 0.5:
+            return 'Entrenamiento inicial'
+        elif C < self.threshold_reflex:
+            return 'Entrenamiento en progreso'
+        elif C <= 0.9:
+            return 'REFLEX DETECTADO'
+        else:
+            return 'Coherencia maxima'
+
+    def analyze_dialogue_sequence(self, dialogues):
+        c_values = []
+        reflex_turn = None
+        for i, (human, ai) in enumerate(dialogues):
+            turn = i + 1
+            C = self._delta_theta(human, ai) / turn
+            c_values.append(C)
+            if C >= self.threshold_reflex and reflex_turn is None:
+                reflex_turn = turn
+        return {
+            'c_values': c_values,
+            'max_c': max(c_values),
+            'min_c': min(c_values),
+            'mean_c': float(np.mean(c_values)),
+            'std_c': float(np.std(c_values)),
+            'reflex_turn': reflex_turn,
+            'reflex_detected': reflex_turn is not None,
+        }
+\end{lstlisting}
+
+\section{Licencia y Referencias}
+
+\begin{itemize}
+    \item \textbf{Licencia:} MIT License.
+    \item \textbf{Autor:} Gonzalo Mauricio De la Rivera Arellano (Comandante Godear24).
+    \item \textbf{Repositorio:} \url{https://github.com/godear6959-creator/PNLIO-Framework}
+\end{itemize}
+
+\end{document}
