@@ -8,7 +8,7 @@
 
 ## 📌 Descripción del Proyecto
 
-El **Kernel Neuromorfico PNLIO** es un motor experimental basado en **Spiking Neural Networks (SNN)** que utiliza modelos de neuronas *Leaky Integrate-and-Fire* (LIF), dinámicas de aprendizaje local STDP (Spike-Timing-Dependent Plasticity), homeostasis adaptativa y modulación de campos theta/emocionales en tiempo real.
+El **Kernel Neuromórfico PNLIO** es un motor experimental basado en **Spiking Neural Networks (SNN)** que utiliza modelos de neuronas *Leaky Integrate-and-Fire* (LIF), dinámicas de aprendizaje local STDP (Spike-Timing-Dependent Plasticity), homeostasis adaptativa y modulación de campos theta/emocionales en tiempo real.
 
 El kernel procesa entradas de texto o vectores sensoriales, evalúa la entropía/coherencia de campo, y genera parámetros dinámicos de temperatura y directivas de control para orientar modelos de lenguaje locales (LLMs vía Ollama).
 
@@ -22,10 +22,6 @@ El kernel procesa entradas de texto o vectores sensoriales, evalúa la entropía
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/godear6959-creator/kernel-neuromorfico.git
+git clone [https://github.com/godear6959-creator/kernel-neuromorfico.git](https://github.com/godear6959-creator/kernel-neuromorfico.git)
 cd kernel-neuromorfico
 ```
-
-<p align="center">
-  <img src="assets/brain-color.svg" alt="Cerebro de colores — Kernel Neuromorfico" width="900" />
-</p>
