@@ -1,0 +1,6 @@
+# Dependencias mínimas para los ejemplos
+sentence-transformers
+numpy
+matplotlib
+pandas
+pnlio
