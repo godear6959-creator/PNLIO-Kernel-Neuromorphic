@@ -1,6 +1,10 @@
-# Dependencias mínimas para los ejemplos
-sentence-transformers
+# PNLIO Kernel Neuromórfico - Dependencias
 numpy
 matplotlib
 pandas
-pnlio
+sentence-transformers
+fastapi
+uvicorn
+pydantic
+requests
+ollama
